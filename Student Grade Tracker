@@ -1,0 +1,93 @@
+/* student grade tracker*/
+
+import tkinter as tk
+from tkinter import messagebox
+
+class GradeManager:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Student Grade Manager")
+        
+        self.subjects = {}
+        
+        self.frame = tk.Frame(root, bg="lightblue", padx=10, pady=10)
+        self.frame.pack(padx=10, pady=10)
+        
+        self.title = tk.Label(self.frame, text="Enter Grades", bg="lightblue", font=("Arial", 16))
+        self.title.grid(row=0, column=0, columnspan=2, pady=10)
+        
+        self.subject_label = tk.Label(self.frame, text="Subject:", bg="lightblue")
+        self.subject_label.grid(row=1, column=0, padx=5, pady=5)
+        
+        self.subject_entry = tk.Entry(self.frame, width=30)
+        self.subject_entry.grid(row=1, column=1, padx=5, pady=5)
+        
+        self.grade_label = tk.Label(self.frame, text="Grade:", bg="lightblue")
+        self.grade_label.grid(row=2, column=0, padx=5, pady=5)
+        
+        self.grade_entry = tk.Entry(self.frame, width=30)
+        self.grade_entry.grid(row=2, column=1, padx=5, pady=5)
+        
+        self.add_button = tk.Button(self.frame, text="Add Grade", command=self.add_grade)
+        self.add_button.grid(row=3, column=0, columnspan=2, pady=10)
+        
+        self.calculate_button = tk.Button(self.frame, text="Calculate Average", command=self.calculate_average)
+        self.calculate_button.grid(row=4, column=0, columnspan=2, pady=10)
+        
+        self.result_label = tk.Label(self.frame, text="", bg="lightblue", font=("Arial", 12))
+        self.result_label.grid(row=5, column=0, columnspan=2, pady=10)
+
+    def add_grade(self):
+        subject = self.subject_entry.get()
+        try:
+            grade = float(self.grade_entry.get())
+            if 0 <= grade <= 100:
+                self.subjects[subject] = grade
+                messagebox.showinfo("Success", f"Added grade for {subject}")
+                self.subject_entry.delete(0, tk.END)
+                self.grade_entry.delete(0, tk.END)
+            else:
+                messagebox.showerror("Error", "Grade must be between 0 and 100")
+        except ValueError:
+            messagebox.showerror("Error", "Please enter a valid grade")
+
+    def calculate_average(self):
+        if not self.subjects:
+            messagebox.showerror("Error", "No grades available")
+            return
+
+        average = sum(self.subjects.values()) / len(self.subjects)
+        letter_grade = self.get_letter_grade(average)
+        gpa = self.get_gpa(average)
+        
+        result_text = f"Average Grade: {average:.2f}\nLetter Grade: {letter_grade}\nGPA: {gpa:.2f}"
+        self.result_label.config(text=result_text)
+
+    def get_letter_grade(self, average):
+        if average >= 90:
+            return 'A'
+        elif average >= 80:
+            return 'B'
+        elif average >= 70:
+            return 'C'
+        elif average >= 60:
+            return 'D'
+        else:
+            return 'F'
+
+    def get_gpa(self, average):
+        if average >= 90:
+            return 4.0
+        elif average >= 80:
+            return 3.0
+        elif average >= 70:
+            return 2.0
+        elif average >= 60:
+            return 1.0
+        else:
+            return 0.0
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = GradeManager(root)
+    root.mainloop()
